@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'quizBrain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() => runApp(Quizzler());
+
+QuizBrain quizBrain = new QuizBrain();
 
 class Quizzler extends StatelessWidget {
   @override
@@ -37,7 +41,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,7 +65,19 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
+                setState(() {
+                  if (quizBrain.isFinished()) {
+                    Alert(
+                            context: context,
+                            title: "Awesome!",
+                            desc: "You Finished")
+                        .show();
+                    quizBrain.reset();
+                  } else {
+                    quizBrain.checkAnswer(true);
+                    quizBrain.getQuestion();
+                  }
+                });
               },
             ),
           ),
@@ -80,11 +96,28 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
+                setState(() {
+                  if (quizBrain.isFinished()) {
+                    Alert(
+                            context: context,
+                            title: "Awesome!",
+                            desc: "You Finished")
+                        .show();
+                    quizBrain.reset();
+                  } else {
+                    quizBrain.checkAnswer(false);
+                    quizBrain.getQuestion();
+                  }
+                });
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Expanded(
+          child: Row(
+            children: quizBrain.scoreTracker,
+          ),
+        )
       ],
     );
   }
